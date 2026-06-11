@@ -139,9 +139,31 @@ nav.shadow { box-shadow: 0 4px 24px rgba(61,122,92,0.10); }
 .btn-ghost { background: transparent; color: var(--coral); border: 1.5px solid rgba(232,97,58,.4); }
 .btn-ghost:hover { background: var(--coral); color: #fff; transform: translateY(-2px); }
 
-/* Hero Terminal */
+/* Hero Terminal — desktop */
 .hero-terminal { position: relative; z-index: 2; opacity: 0; animation: slideLeft .8s .4s forwards; }
 @keyframes slideLeft { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:none} }
+
+/* Hero Terminal — mobile compact (hidden on desktop) */
+.hero-terminal-mobile {
+  display: none; position: relative; z-index: 2;
+  margin-top: 28px;
+  opacity: 0; animation: riseIn .7s .9s forwards;
+}
+.hero-terminal-mobile .terminal-body {
+  padding: 14px 16px; font-size: 11.5px; line-height: 1.75;
+  max-height: 155px; overflow: hidden; position: relative;
+}
+.hero-terminal-mobile .terminal-body::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 38px;
+  background: linear-gradient(to bottom, transparent, #171210);
+  pointer-events: none;
+}
+.hero-terminal-mobile .terminal-wrap {
+  box-shadow: 0 12px 40px rgba(0,0,0,.22), 0 0 0 1px rgba(61,122,92,.1);
+}
+@media (max-width: 960px) {
+  .hero-terminal-mobile { display: block; }
+}
 
 .terminal-wrap {
   background: #171210; border-radius: 16px;
@@ -365,6 +387,17 @@ footer { background: #0b0806; text-align:center; padding:22px; font-family:var(-
       <a href="#projects" class="btn btn-fill">View Projects ↓</a>
       <a href="#contact" class="btn btn-ghost">Get in Touch</a>
     </div>
+
+    <!-- Mobile-only terminal -->
+    <div class="hero-terminal-mobile">
+      <div class="terminal-wrap">
+        <div class="terminal-bar">
+          <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+          <span class="tfile">profile.ts</span>
+        </div>
+        <div class="terminal-body" id="terminalBodyMobile"></div>
+      </div>
+    </div>
   </div>
   <div class="hero-terminal">
     <div class="terminal-wrap">
@@ -550,7 +583,7 @@ function doType() {
 }
 doType();
 
-/* TERMINAL */
+/* TERMINAL — populate both desktop + mobile */
 const lines = [
   { t: '<span class="tl-cmt">// profile.ts</span>', d: 0 },
   { t: '<span class="tl-kw">const</span> <span class="tl-fn">developer</span> <span class="tl-br">= {</span>', d: 80 },
@@ -566,11 +599,14 @@ const lines = [
   { t: '<span class="tl-br">}</span>', d: 760 },
 ];
 const tb = document.getElementById('terminalBody');
+const tbm = document.getElementById('terminalBodyMobile');
 lines.forEach(l => {
   setTimeout(() => {
-    const s = document.createElement('span');
-    s.className = 'tl'; s.innerHTML = l.t; s.style.animationDelay = '0s';
-    tb.appendChild(s);
+    [tb, tbm].forEach(container => {
+      const s = document.createElement('span');
+      s.className = 'tl'; s.innerHTML = l.t; s.style.animationDelay = '0s';
+      container.appendChild(s);
+    });
   }, 600 + l.d);
 });
 
